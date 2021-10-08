@@ -141,7 +141,7 @@ class Room1 extends Phaser.Scene {
                 _this.players[socket.id].playerInput = inputData;
             });
             socket.on('disconnect', function() {
-                _this.players[socket.id].destroy();
+                players[socket.id].destroy();
                 delete _this.players[socket.id];
                 // global.gc();
             });
