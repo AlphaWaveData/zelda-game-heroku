@@ -142,9 +142,10 @@ class Room1 extends Phaser.Scene {
             });
             socket.on('disconnect', function(){
                 Object.values(_this.players).forEach( player => {
-                    if (socket.id == player.socket.id) {
-                        player.destroy();
-                    }
+                    player.destroy();
+                    // if (socket.id == player.socket.id) {
+                    //     player.destroy();
+                    // }
                 });
                 delete _this.players[socket.id];
             });
