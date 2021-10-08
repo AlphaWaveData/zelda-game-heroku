@@ -137,14 +137,12 @@ class Room1 extends Phaser.Scene {
                 });
             });
 
-            // socket.on('playerInput', function(inputData) {
-            //     _this.players[socket.id].playerInput = inputData;
-            // });
-            socket.once('playerInput', function(inputData) {
+            socket.on('playerInput', function(inputData) {
                 _this.players[socket.id].playerInput = inputData;
             });
             socket.on('disconnect', function() {
                 delete _this.players[socket.id];
+                global.gc();
             });
         });
 
