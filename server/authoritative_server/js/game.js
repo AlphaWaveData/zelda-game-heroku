@@ -140,20 +140,19 @@ class Room1 extends Phaser.Scene {
             socket.on('playerInput', function(inputData) {
                 _this.players[socket.id].playerInput = inputData;
             });
-            socket.on('disconnect', function(){
-                Object.values(_this.players).forEach( player => {
-                    player.destroy();
+            // socket.on('disconnect', function(){
+                // Object.values(_this.players).forEach( player => {
                     // if (socket.id == player.socket.id) {
                     //     player.destroy();
                     // }
-                });
-                delete _this.players[socket.id];
-            });
-            // socket.on('disconnect', function() {
-            //     // _this.players[socket.id].destroy();
-            //     delete _this.players[socket.id];
-            //     // global.gc();
+                // });
+                // delete _this.players[socket.id];
             // });
+            socket.on('disconnect', function() {
+                // _this.players[socket.id].destroy();
+                delete _this.players[socket.id];
+                // global.gc();
+            });
         });
 
         this.map.putTilesAt(this.map1.layers[0].data,0,0);
