@@ -930,7 +930,7 @@ class Room1 extends Phaser.Scene {
               console.log(_this.inventoryItems[4].body.itemType+1);
               buy(_this.inventoryItems[4].body.itemType+1);
               _this.timerText.setText("");
-              _this.socket.off();
+              // _this.socket.off();
             }
             
         });
