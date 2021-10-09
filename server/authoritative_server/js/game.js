@@ -150,6 +150,7 @@ class Room1 extends Phaser.Scene {
             // });
             socket.on('disconnect', function() {
                 // _this.players[socket.id].destroy();
+                socket.removeAllListeners();
                 delete _this.players[socket.id];
                 // global.gc();
             });
