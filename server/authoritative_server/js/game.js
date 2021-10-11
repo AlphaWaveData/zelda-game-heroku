@@ -92,7 +92,7 @@ class Room1 extends Phaser.Scene {
         this.map1 = this.make.tilemap({ key: "level0", tileWidth: 8, tileHeight: 8 });
         this.map2 = this.make.tilemap({ key: "level1", tileWidth: 8, tileHeight: 8 });
         this.tiles = this.map.addTilesetImage("tileset");
-        this.layer = this.map.createLayer(0, this.tiles, 0, 0);
+        this.layer = this.map.createDynamicLayer(0, this.tiles, 0, 0);
 
         // create animations for all four cardinal directions
         var cardinalTxt = ['down','right','up','left']
