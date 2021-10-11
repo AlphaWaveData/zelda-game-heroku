@@ -1,5 +1,5 @@
 class Player {
-    constructor(physics,id){
+    constructor(physics){
         var x = Phaser.Math.RND.between(40,216);
         var y = Phaser.Math.RND.between(41,135);
         this.color  = Phaser.Math.RND.between(0,16);
@@ -11,10 +11,9 @@ class Player {
         this.body.player = this;
         this.weapon.player = this;
         this.lock = false;
-        this.playerInput = {left:false,up:false,right:false,down:false,space:false,reset:false};
+        this.playerInput = {left:false,up:false,right:false,down:false,space:false};
         this.maxInventory = 5;
         this.inventory = [];
-        this.id = id;
     }
 }
 
@@ -23,17 +22,6 @@ class Item {
         var x = -1000;
         var y = -1000;
         this.body = physics.add.sprite(x, y, 'items');
-        this.body.setActive(false).setVisible(false);
-        this.body.itemType = (itemType==null ? Phaser.Math.RND.between(0,23) : itemType);
-        this.body.itemID = itemID;
-        this.body.anims.play('item-'+Number(this.body.itemType).toString(),false);
-    }
-    reset(itemID,itemType=null){
-        if (typeof this.body === "undefined"){
-            this.body = physics.add.sprite(x, y, 'items');
-        }
-        this.body.x = -1000;
-        this.body.y = -1000;
         this.body.setActive(false).setVisible(false);
         this.body.itemType = (itemType==null ? Phaser.Math.RND.between(0,23) : itemType);
         this.body.itemID = itemID;
@@ -49,21 +37,6 @@ class Monster {
             'octorock'
         );
         //this.body.setScale(0.8);
-        this.body.anims.play('octorock-down',true);
-        this.body.anim = 'down';
-        this.body.item = itemType;
-    }
-    reset(physics,itemType){
-        if (typeof this.body === "undefined"){
-            this.body = physics.add.sprite(
-                Phaser.Math.RND.between(38,config.width-38),
-                Phaser.Math.RND.between(38,config.height-38),
-                'octorock'
-            );
-        }
-        this.body.setActive(true).setVisible(true);
-        this.body.x = Phaser.Math.RND.between(38,config.width-38);
-        this.body.y = Phaser.Math.RND.between(38,config.height-38);
         this.body.anims.play('octorock-down',true);
         this.body.anim = 'down';
         this.body.item = itemType;
@@ -92,7 +65,9 @@ class Room1 extends Phaser.Scene {
         this.map1 = this.make.tilemap({ key: "level0", tileWidth: 8, tileHeight: 8 });
         this.map2 = this.make.tilemap({ key: "level1", tileWidth: 8, tileHeight: 8 });
         this.tiles = this.map.addTilesetImage("tileset");
-        this.layer = this.map.createLayer(0, this.tiles, 0, 0);
+        this.layer = this.map.createDynamicLayer(0, this.tiles, 0, 0);
+
+        this.timer = 90+.9 // the +.9 is to ensure the first second doesn't tick too quickly
 
         // create animations for all four cardinal directions
         var cardinalTxt = ['down','right','up','left']
@@ -131,26 +106,23 @@ class Room1 extends Phaser.Scene {
             });
         }
 
-        this.maxTimer = 90;
-        this.timer = this.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
-
         this.players  = {};
         this.items = Array(10).fill().map( (_,i) => new Item(this.physics,i) );
         this.monsters = Array(10).fill().map( (_,i) => new Monster(this.physics,i) );
+
+        this.monsters.forEach( monster => {
+            this.physics.add.collider(monster.body, this.layer);
+        });
         this.map.setCollision([0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123])
 
         this.x = 0;
 
         var _this = this; // used to inject this.player into io.on's scope
         io.on('connection', function(socket) {
-            if(socket.id in _this.players){
-                console.log('user '+socket.id+' already exists')
-            } 
-            else {
-                console.log('a user connected '+socket.id+' '+(socket.id in _this.players).toString());
+            console.log('a user connected');
 
-                var player = new Player(_this.physics,socket.id);
-                _this.players[socket.id] = player;
+            _this.players[socket.id] = new Player(_this.physics)
+            Object.values(_this.players).forEach( player => {
                 _this.physics.add.collider(player.body, _this.layer);
                 Object.values(_this.players).forEach( player2 => {
                     if(player!=player2){
@@ -163,26 +135,25 @@ class Room1 extends Phaser.Scene {
                 _this.items.forEach( item => {
                     _this.physics.add.overlap(player.body,item.body,_this.itemPickup,null,_this);
                 });
+            });
 
-                socket.on('playerInput', function(inputData) {
-                    _this.players[socket.id].playerInput = inputData;
-                });
-                socket.on('disconnect', function() {
-                    console.log('a user disconnected '+socket.id);
-                    _this.players[socket.id].body.destroy();
-                    _this.players[socket.id].weapon.destroy();
-                    delete _this.players[socket.id];
-                    socket.removeAllListeners();
-                    socket.disconnect();
-                    //socket.listenersAny().forEach(listener => {  
-                    //});
-                    gc();
-                    if(Object.keys(_this.players).length == 0){
-                        console.log("server resetting");
-                        _this.scene.restart();
-                    }
-                });
-            }
+            socket.on('playerInput', function(inputData) {
+                _this.players[socket.id].playerInput = inputData;
+            });
+            // socket.on('disconnect', function(){
+                // Object.values(_this.players).forEach( player => {
+                    // if (socket.id == player.socket.id) {
+                    //     player.destroy();
+                    // }
+                // });
+                // delete _this.players[socket.id];
+            // });
+            socket.on('disconnect', function() {
+                // _this.players[socket.id].destroy();
+                // socket.removeAllListeners('playerInput');
+                delete _this.players[socket.id];
+                // global.gc();
+            });
         });
 
         this.map.putTilesAt(this.map1.layers[0].data,0,0);
@@ -219,8 +190,6 @@ class Room1 extends Phaser.Scene {
         if(this.timer>0){
             this.timer -= .03;
 
-            Object.values(this.players).forEach( player => this.resetGameIfRequested(player) );
-
             Object.values(this.players).forEach( player => this.playerMove(player) );
 
             Object.keys(this.players).forEach( id => {
@@ -248,7 +217,7 @@ class Room1 extends Phaser.Scene {
                 );
             });
             Object.values(this.players).forEach( player => {
-                player.playerInput = {left:false,up:false,right:false,down:false,space:false,reset:false}; // reset
+                player.playerInput = {left:false,up:false,right:false,down:false,space:false}; // reset
             });
 
             io.emit("monsterUpdate", this.monsters.map( monster => {
@@ -322,47 +291,6 @@ class Room1 extends Phaser.Scene {
 
         }
 
-    }
-
-    resetGameIfRequested(player){ // NOTE: this function si currently unused
-
-        if(player.playerInput.reset){
-            //this.resetGame();
-            // this.scene.restart(); // uncomment this line to restore reset functionality via key press
-        }
-    }
-
-    resetGame(){ // NOTE: this function si currently unused
-        
-        this.timer = self.maxTimer+.9 // the +.9 is to ensure the first second doesn't tick too quickly
-
-        // destroy all the old monsters and items (if they exist)
-        Object.values(this.items).forEach( item => { item.reset(); });
-        Object.values(this.monsters).forEach( monster => { monster.reset(this.physics); });
-        Object.values(this.players).forEach( player => { player.inventory=[]; });
-        /*
-        // create new monsters and items
-        this.items = Array(10).fill().map( (_,i) => new Item(this.physics,i) );
-        this.monsters = Array(10).fill().map( (_,i) => new Monster(this.physics,i) );
-
-        // set up collisions correctly between the player and monsters/items
-        this.monsters.forEach( monster => {
-            this.physics.add.collider(monster.body, this.layer);
-        });
-        Object.values(this.players).forEach( player => {
-            this.physics.add.collider(player.body, this.layer);
-            Object.values(this.players).forEach( player2 => {
-                if(player!=player2){
-                    this.physics.add.collider(player.weapon,player2.body,this.playerHit,null,this);
-                }
-            });
-            this.monsters.forEach( monster => {
-                this.physics.add.collider(player.weapon,monster.body,this.monsterKill,null,this);
-            });
-            this.items.forEach( item => {
-                this.physics.add.overlap(player.body,item.body,this.itemPickup,null,this);
-            });
-        });*/
     }
 
     playerMove(player,speed=50){

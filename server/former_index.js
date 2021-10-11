@@ -3,11 +3,10 @@ const jsdom = require('jsdom');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
-const io = require('socket.io').listen(server); // socket.io v2
-//const io = require("socket.io")(3000); // socket.io v4
+const io = require('socket.io').listen(server);
 const Datauri = require('datauri');
 const Web3 = require('web3');
-const gc = require('expose-gc');
+
 
 const datauri = new Datauri();
 const { JSDOM } = jsdom;
@@ -48,7 +47,6 @@ function setupAuthoritativePhaser() {
       });
     };
     dom.window.io = io;
-    dom.window.gc = gc;
     dom.window.Web3 = Web3;
   }).catch((error) => {
     console.log(error.message);

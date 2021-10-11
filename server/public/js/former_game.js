@@ -5,6 +5,7 @@ ethereum.enable();
 // This is for testing on local blockchain
 // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:9545"));
 
+
 var marketplaceAbi = [
   {
     "inputs": [
@@ -808,8 +809,7 @@ class Room1 extends Phaser.Scene {
     create()
     {
         //console.log(window.Web3);
-        this.socket = io(); //socket.io v2
-        //const socket = io("ws://localhost:3000"); // socket.io v4
+        this.socket = io();
 
         this.map = this.make.tilemap({ key: "level0", tileWidth: 8, tileHeight: 8 });
         this.map1 = this.make.tilemap({ key: "level0", tileWidth: 8, tileHeight: 8 });
@@ -875,7 +875,6 @@ class Room1 extends Phaser.Scene {
         this.map.setCollision([0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123])
 
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.resetKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
         this.x = 0;
 
         var _this = this; // used to inject this.player into this.socket.on's scope
@@ -931,6 +930,7 @@ class Room1 extends Phaser.Scene {
               console.log(_this.inventoryItems[4].body.itemType+1);
               buy(_this.inventoryItems[4].body.itemType+1);
               _this.timerText.setText("");
+              // _this.socket.off();
             }
             
         });
@@ -1052,15 +1052,13 @@ class Room1 extends Phaser.Scene {
              fingerPress.up    ||
              fingerPress.right ||
              fingerPress.a     ||
-             fingerPress.b     ||
-             this.resetKey.isDown ) {
+             fingerPress.b ) {
             this.socket.emit('playerInput', {
                 'left'  : this.cursors.left.isDown  || fingerPress.left,
                 'up'    : this.cursors.up.isDown    || fingerPress.up,
                 'right' : this.cursors.right.isDown || fingerPress.right,
                 'down'  : this.cursors.down.isDown  || fingerPress.down,
-                'space' : this.cursors.space.isDown || fingerPress.a || fingerPress.b,
-                'reset' : this.resetKey.isDown
+                'space' : this.cursors.space.isDown || fingerPress.a || fingerPress.b
             });
         }
         
