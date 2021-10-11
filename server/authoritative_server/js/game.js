@@ -173,7 +173,7 @@ class Room1 extends Phaser.Scene {
                     _this.players[socket.id].weapon.destroy();
                     delete _this.players[socket.id];
                     socket.removeAllListeners();
-                    // socket.disconnect();
+                    socket.disconnect();
                     //socket.listenersAny().forEach(listener => {  
                     //});
                     gc();
