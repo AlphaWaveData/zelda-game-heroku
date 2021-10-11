@@ -173,14 +173,14 @@ class Room1 extends Phaser.Scene {
                     _this.players[socket.id].weapon.destroy();
                     delete _this.players[socket.id];
                     socket.removeAllListeners();
-                    socket.disconnect();
+                    // socket.disconnect();
                     //socket.listenersAny().forEach(listener => {  
                     //});
                     gc();
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
-                        _this.timer = self.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
-                        _this.scene.restart();
+                        // _this.timer = self.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
+                        // _this.scene.restart();
                     }
                 });
             }
