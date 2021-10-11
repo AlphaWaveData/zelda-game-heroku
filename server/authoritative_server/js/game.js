@@ -179,7 +179,7 @@ class Room1 extends Phaser.Scene {
                     gc();
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
-                        _this.scene.restart();
+                        // _this.scene.restart();
                     }
                 });
             }
