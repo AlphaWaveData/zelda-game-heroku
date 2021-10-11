@@ -131,8 +131,8 @@ class Room1 extends Phaser.Scene {
             });
         }
 
-        this.maxTimer = 90;
-        this.timer = this.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
+        // this.maxTimer = 90;
+        // this.timer = this.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
 
         this.players  = {};
         this.items = Array(10).fill().map( (_,i) => new Item(this.physics,i) );
@@ -145,9 +145,13 @@ class Room1 extends Phaser.Scene {
         io.on('connection', function(socket) {
             if(socket.id in _this.players){
                 console.log('user '+socket.id+' already exists')
+                _this.maxTimer = 90;
+                _this.timer = _this.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
             } 
             else {
                 console.log('a user connected '+socket.id+' '+(socket.id in _this.players).toString());
+                _this.maxTimer = 90;
+                _this.timer = _this.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
 
                 var player = new Player(_this.physics,socket.id);
                 _this.players[socket.id] = player;
