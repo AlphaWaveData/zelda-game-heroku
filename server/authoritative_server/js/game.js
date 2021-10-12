@@ -142,6 +142,7 @@ class Room1 extends Phaser.Scene {
         this.x = 0;
 
         var _this = this; // used to inject this.player into io.on's scope
+        var used = process.memoryUsage().heapUsed / 1024 /1024;
         io.on('connection', function(socket) {
             if(socket.id in _this.players){
                 console.log('user '+socket.id+' already exists')
@@ -180,7 +181,7 @@ class Room1 extends Phaser.Scene {
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
                         _this.scene.restart();
-                        var used = process.memoryUsage().heapUsed / 1024 /1024;
+                        // var used = process.memoryUsage().heapUsed / 1024 /1024;
                         console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
                         console.log("Manual gc");
                         gc();
