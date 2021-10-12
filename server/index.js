@@ -8,7 +8,7 @@ const io = require('socket.io').listen(server); // socket.io v2
 const Datauri = require('datauri');
 const Web3 = require('web3');
 const gc = require('expose-gc');
-const process = require('process')
+const process = require('process');
 
 const datauri = new Datauri();
 const { JSDOM } = jsdom;
