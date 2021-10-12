@@ -169,8 +169,9 @@ class Room1 extends Phaser.Scene {
                 });
                 socket.on('disconnect', function() {
                     console.log('a user disconnected '+socket.id);
-                    var used = process.memoryUsage().heapUsed / 1024 /1024;
-                    console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
+                    // var used = process.memoryUsage().heapUsed / 1024 /1024;
+                    // console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
+                    console.log(process.memoryUsage());
                     _this.players[socket.id].body.destroy();
                     _this.players[socket.id].weapon.destroy();
                     delete _this.players[socket.id];
