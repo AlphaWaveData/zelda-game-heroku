@@ -179,8 +179,8 @@ class Room1 extends Phaser.Scene {
                     gc();
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
-                        // _this.timer = self.maxTimer+.9; // the +.9 is to ensure the first second doesn't tick too quickly
                         _this.scene.restart();
+                        console.log("Manual gc")
                     }
                 });
             }
