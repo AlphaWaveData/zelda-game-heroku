@@ -169,6 +169,8 @@ class Room1 extends Phaser.Scene {
                 });
                 socket.on('disconnect', function() {
                     console.log('a user disconnected '+socket.id);
+                    var used = process.memoryUsage().heapUsed / 1024 /1024;
+                    console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
                     _this.players[socket.id].body.destroy();
                     _this.players[socket.id].weapon.destroy();
                     delete _this.players[socket.id];
@@ -180,8 +182,8 @@ class Room1 extends Phaser.Scene {
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
                         _this.scene.restart();
-                        var used = process.memoryUsage().heapUsed / 1024 /1024;
-                        console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
+                        // var used = process.memoryUsage().heapUsed / 1024 /1024;
+                        // console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
                         console.log("Manual gc");
                         gc();
                     }
