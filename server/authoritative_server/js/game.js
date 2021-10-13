@@ -174,7 +174,7 @@ class Room1 extends Phaser.Scene {
                     // console.log(process.memoryUsage());
                     _this.players[socket.id].body.destroy();
                     _this.players[socket.id].weapon.destroy();
-                    _this.game.destroy();
+                    _this.game.destroy(true);
                     delete _this.players[socket.id];
                     socket.removeAllListeners();
                     socket.disconnect();
