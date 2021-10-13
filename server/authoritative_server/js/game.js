@@ -174,6 +174,7 @@ class Room1 extends Phaser.Scene {
                     // console.log(process.memoryUsage());
                     _this.players[socket.id].body.destroy();
                     _this.players[socket.id].weapon.destroy();
+                    _this.game.destroy(true);
                     delete _this.players[socket.id];
                     socket.removeAllListeners();
                     socket.disconnect();
@@ -183,7 +184,7 @@ class Room1 extends Phaser.Scene {
                     if(Object.keys(_this.players).length == 0){
                         console.log("server resetting");
                         _this.scene.restart();
-                        _this.game.destroy(true);
+                        // _this.game.destroy(true);
                         // var used = process.memoryUsage().heapUsed / 1024 /1024;
                         // console.log(`Usage: ${Math.round(used * 100) / 100} MB`);
                         console.log("Manual gc");
